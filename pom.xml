@@ -76,9 +76,9 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:git:git://github.com/iitsoftware/swiftmq-client.git</connection>
-    <developerConnection>scm:git:git@github.com:iitsoftware/swiftmq-client.git</developerConnection>
-    <url>https://github.com/iitsoftware/swiftmq-client</url>
+    <connection>scm:git:git://github.com/iitsoftware/swiftmq-client-jakarta.git</connection>
+    <developerConnection>scm:git:git@github.com:iitsoftware/swiftmq-client-jakarta.git</developerConnection>
+    <url>https://github.com/iitsoftware/swiftmq-client-jakarta</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -91,6 +91,59 @@
           <source>11</source>
           <target>11</target>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer
+                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                </transformer>
+              </transformers>
+              <artifactSet>
+                <excludes>
+                </excludes>
+              </artifactSet>
+              <outputFile>${project.build.directory}/${project.artifactId}_fat.jar</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>client-jakarta</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>assembly.xml</descriptor>
+              </descriptors>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.sonatype.plugins</groupId>

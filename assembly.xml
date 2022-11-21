@@ -1,0 +1,22 @@
+<assembly>
+  <id>client-jakarta</id>
+  <formats>
+    <format>tar.gz</format>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>disttemplate</directory>
+      <outputDirectory>${project.artifactId}_${project.version}</outputDirectory>
+      <fileMode>0755</fileMode>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>target/swiftmq-client-jakarta_fat.jar</source>
+      <outputDirectory>${project.artifactId}_${project.version}/jars</outputDirectory>
+      <destName>swiftmq.jar</destName>
+    </file>
+  </files>
+</assembly>
