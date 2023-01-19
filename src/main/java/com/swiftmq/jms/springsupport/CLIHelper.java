@@ -73,8 +73,8 @@ public class CLIHelper {
         cli = new CLI(connection);
         cli.waitForRouter(router);
         cli.executeCommand("sr " + router);
-        for (int i = 0; i < initCommands.length; i++) {
-            cli.executeCommand(initCommands[i]);
+        for (String initCommand : initCommands) {
+            cli.executeCommand(initCommand);
         }
     }
 
@@ -91,8 +91,8 @@ public class CLIHelper {
         }
         cli.executeCommand("sr " + router);
         cli.waitForRouter(router);
-        for (int i = 0; i < destroyCommands.length; i++) {
-            cli.executeCommand(destroyCommands[i]);
+        for (String destroyCommand : destroyCommands) {
+            cli.executeCommand(destroyCommand);
         }
         cli.close();
         connection.close();

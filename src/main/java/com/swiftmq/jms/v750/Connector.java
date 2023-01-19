@@ -48,7 +48,7 @@ import java.util.List;
 
 public class Connector implements ReconnectVisitor, InboundHandler, ExceptionHandler {
     private static final int MAX_INTERNAL_RETRY_COUNT = Integer.parseInt(System.getProperty("swiftmq.reconnect.max.internal.retry.count", "10"));
-    DumpableFactory dumpableFactory = new com.swiftmq.jms.smqp.SMQPFactory(new com.swiftmq.jms.smqp.v750.SMQPFactory());
+    DumpableFactory dumpableFactory = new com.swiftmq.jms.smqp.SMQPFactory(new SMQPFactory());
 
     PipelineQueue pipelineQueue = null;
     Reconnector reconnector = null;

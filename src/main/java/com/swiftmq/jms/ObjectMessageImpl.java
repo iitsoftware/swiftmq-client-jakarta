@@ -21,6 +21,7 @@ import com.swiftmq.tools.security.SecureClassLoaderObjectInputStream;
 import com.swiftmq.tools.util.DataByteArrayInputStream;
 import com.swiftmq.tools.util.DataByteArrayOutputStream;
 import jakarta.jms.JMSException;
+import jakarta.jms.MessageFormatException;
 import jakarta.jms.MessageNotWriteableException;
 import jakarta.jms.ObjectMessage;
 
@@ -132,7 +133,7 @@ public class ObjectMessageImpl extends MessageImpl implements ObjectMessage {
     /**
      * Set the serializable object containing this message's data.
      *
-     * @param object the message's data
+     * @param obj the message's data
      * @throws JMSException                 if JMS fails to  set object due to
      *                                      some internal JMS error.
      * @throws MessageFormatException       if object serialization fails
@@ -163,6 +164,18 @@ public class ObjectMessageImpl extends MessageImpl implements ObjectMessage {
         super.clearBody();
         bodyReadOnly = false;
         cnt = 0;
+    }
+
+    @Override
+    public <T> T getBody(Class<T> aClass) throws JMSException {
+        if (!isBodyAssignableTo(aClass))
+            throw new MessageFormatException("Message body is not assignable to class: " + aClass.getName());
+        return (T) getObject();
+    }
+
+    @Override
+    public boolean isBodyAssignableTo(Class aClass) throws JMSException {
+        return aClass.isAssignableFrom(Serializable.class) || aClass.isAssignableFrom(Object.class);
     }
 
     public String toString() {

@@ -19,6 +19,7 @@ package com.swiftmq.jms;
 
 import com.swiftmq.tools.util.LazyUTF8String;
 import jakarta.jms.JMSException;
+import jakarta.jms.MessageFormatException;
 import jakarta.jms.MessageNotWriteableException;
 import jakarta.jms.TextMessage;
 
@@ -132,6 +133,18 @@ public class TextMessageImpl extends MessageImpl implements TextMessage {
         super.clearBody();
         lazy = null;
         bodyReadOnly = false;
+    }
+
+    @Override
+    public <T> T getBody(Class<T> aClass) throws JMSException {
+        if (!isBodyAssignableTo(aClass))
+            throw new MessageFormatException("Message body is not assignable to class: " + aClass.getName());
+        return (T) getText();
+    }
+
+    @Override
+    public boolean isBodyAssignableTo(Class aClass) throws JMSException {
+        return aClass.isAssignableFrom(String.class);
     }
 
     public String toString() {

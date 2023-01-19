@@ -74,7 +74,7 @@ public class ConnectionImpl extends RequestServiceRegistry
     List sessionList = Collections.synchronizedList(new ArrayList());
     List connectionConsumerList = Collections.synchronizedList(new ArrayList());
     Map tmpQueues = Collections.synchronizedMap(new HashMap());
-    DumpableFactory dumpableFactory = new com.swiftmq.jms.smqp.SMQPFactory(new com.swiftmq.jms.smqp.v750.SMQPFactory());
+    DumpableFactory dumpableFactory = new com.swiftmq.jms.smqp.SMQPFactory(new SMQPFactory());
     boolean cancelled = false;
     boolean clientIdAllowed = true;
     ChallengeResponseFactory crFactory = null;
@@ -229,7 +229,7 @@ public class ConnectionImpl extends RequestServiceRegistry
         }
         lastSecurityException = null;
         authReply = (GetAuthChallengeReply) reply;
-        crFactory = (ChallengeResponseFactory) Class.forName(authReply.getFactoryClass()).newInstance();
+        crFactory = (ChallengeResponseFactory) Class.forName(authReply.getFactoryClass()).getDeclaredConstructor().newInstance();
     }
 
     public Request getAuthenticateResponse() {
@@ -1001,24 +1001,28 @@ public class ConnectionImpl extends RequestServiceRegistry
         }
     }
 
+    /*
+     * TODO: JMS 2.0
+     */
+
     @Override
-    public Session createSession(int i) throws JMSException {
-        throw new JMSException("Operation not supported");
+    public Session createSession(int sessionMode) throws JMSException {
+        return createSession(false, sessionMode);
     }
 
     @Override
     public Session createSession() throws JMSException {
-        throw new JMSException("Operation not supported");
+        return createSession(Session.AUTO_ACKNOWLEDGE);
     }
 
     @Override
-    public ConnectionConsumer createSharedConnectionConsumer(Topic topic, String s, String s1, ServerSessionPool serverSessionPool, int i) throws JMSException {
-        throw new JMSException("Operation not supported");
+    public ConnectionConsumer createSharedConnectionConsumer(Topic topic, String subscriptionName, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException {
+        return null;
     }
 
     @Override
-    public ConnectionConsumer createSharedDurableConnectionConsumer(Topic topic, String s, String s1, ServerSessionPool serverSessionPool, int i) throws JMSException {
-        throw new JMSException("Operation not supported");
+    public ConnectionConsumer createSharedDurableConnectionConsumer(Topic topic, String subscriptionName, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException {
+        return null;
     }
 
     private class ConnectionQueue extends SingleProcessorQueue {

@@ -108,7 +108,7 @@ public class XAResourceImpl implements XAResourceExtended, RequestRetryValidator
 
     private XidImpl toSwiftMQXid(Xid xid) {
         XidImpl rXid = null;
-        if (xid instanceof com.swiftmq.jms.XidImpl)
+        if (xid instanceof XidImpl)
             rXid = (XidImpl) xid;
         else {
             rXid = (XidImpl) xidMapping.get(xid);

@@ -4,18 +4,18 @@ import jakarta.jms.*;
 
 public class SingleSharedConnectionFactory
         implements ConnectionFactory, QueueConnectionFactory, TopicConnectionFactory {
-    static final boolean DEBUG = Boolean.valueOf(System.getProperty("swiftmq.springsupport.debug", "false")).booleanValue();
+    static final boolean DEBUG = Boolean.valueOf(System.getProperty("swiftmq.springsupport.debug", "false"));
     private ConnectionFactory targetConnectionFactory = null;
     private SharedJMSConnection sharedConnection = null;
     private long poolExpiration = 60000;
     private String clientId = null;
 
     public SingleSharedConnectionFactory() {
-        if (DEBUG) System.out.println(toString() + "/created");
+        if (DEBUG) System.out.println(this + "/created");
     }
 
     public SingleSharedConnectionFactory(ConnectionFactory targetConnectionFactory) {
-        if (DEBUG) System.out.println(toString() + "/created");
+        if (DEBUG) System.out.println(this + "/created");
         this.targetConnectionFactory = targetConnectionFactory;
     }
 
@@ -45,18 +45,18 @@ public class SingleSharedConnectionFactory
 
     private void ensureConnection() throws JMSException {
         if (sharedConnection == null) {
-            if (DEBUG) System.out.println(toString() + "/ensureConnection, create connection ...");
+            if (DEBUG) System.out.println(this + "/ensureConnection, create connection ...");
             if (targetConnectionFactory == null)
                 throw new jakarta.jms.IllegalStateException("SingleSharedConnectionFactory: targetConnectionFactory has not been set!");
             sharedConnection = new SharedJMSConnection(targetConnectionFactory.createConnection(), poolExpiration);
             if (clientId != null)
                 sharedConnection.setClientID(clientId);
-            if (DEBUG) System.out.println(toString() + "/ensureConnection, create connection done");
+            if (DEBUG) System.out.println(this + "/ensureConnection, create connection done");
         }
     }
 
     public synchronized Connection createConnection() throws JMSException {
-        if (DEBUG) System.out.println(toString() + "/createConnection");
+        if (DEBUG) System.out.println(this + "/createConnection");
         ensureConnection();
         return sharedConnection;
     }
@@ -66,7 +66,7 @@ public class SingleSharedConnectionFactory
     }
 
     public QueueConnection createQueueConnection() throws JMSException {
-        if (DEBUG) System.out.println(toString() + "/createQueueConnection");
+        if (DEBUG) System.out.println(this + "/createQueueConnection");
         ensureConnection();
         return sharedConnection;
     }
@@ -76,7 +76,7 @@ public class SingleSharedConnectionFactory
     }
 
     public TopicConnection createTopicConnection() throws JMSException {
-        if (DEBUG) System.out.println(toString() + "/createTopicConnection");
+        if (DEBUG) System.out.println(this + "/createTopicConnection");
         ensureConnection();
         return sharedConnection;
     }
@@ -86,33 +86,36 @@ public class SingleSharedConnectionFactory
     }
 
     public synchronized void destroy() throws Exception {
-        if (DEBUG) System.out.println(toString() + "/destroy");
+        if (DEBUG) System.out.println(this + "/destroy");
         if (sharedConnection != null) {
-            if (DEBUG) System.out.println(toString() + "/destroy, close shared connection ...");
+            if (DEBUG) System.out.println(this + "/destroy, close shared connection ...");
             sharedConnection.destroy();
             sharedConnection = null;
-            if (DEBUG) System.out.println(toString() + "/destroy, close shared connection done");
+            if (DEBUG) System.out.println(this + "/destroy, close shared connection done");
         }
     }
 
+    /*
+     * TODO: JMS 2.0
+     */
     @Override
     public JMSContext createContext() {
-        throw new RuntimeException("Operation not supported");
+        return null;
     }
 
     @Override
     public JMSContext createContext(String s, String s1) {
-        throw new RuntimeException("Operation not supported");
+        return null;
     }
 
     @Override
     public JMSContext createContext(String s, String s1, int i) {
-        throw new RuntimeException("Operation not supported");
+        return null;
     }
 
     @Override
     public JMSContext createContext(int i) {
-        throw new RuntimeException("Operation not supported");
+        return null;
     }
 
     public String toString() {

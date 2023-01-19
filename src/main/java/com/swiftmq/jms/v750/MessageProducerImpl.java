@@ -29,8 +29,11 @@ import com.swiftmq.tools.util.IdGenerator;
 import jakarta.jms.IllegalStateException;
 import jakarta.jms.*;
 
+import java.text.SimpleDateFormat;
+
 public class MessageProducerImpl implements MessageProducerExtended, RequestRetryValidator {
     private static final boolean ASYNC_SEND = Boolean.valueOf(System.getProperty("swiftmq.jms.persistent.asyncsend", "false")).booleanValue();
+    private static final SimpleDateFormat DELAY_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     public volatile int producerId = -1;
     boolean closed = false;
     RequestRegistry requestRegistry = null;
@@ -52,6 +55,8 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
     DestinationImpl destImpl = null;
     String clientId = null;
     DataByteArrayOutputStream dbos = new DataByteArrayOutputStream(2048);
+    // JMS 2.0
+    long deliveryDelay = 0;
 
     public MessageProducerImpl(SessionImpl mySession, int producerId,
                                RequestRegistry requestRegistry,
@@ -136,7 +141,7 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
         if (message == null)
             throw new JMSException("The message you try to send is NULL!");
         MessageImpl msg = null;
-        if (mySession.withinOnMessage && message == mySession.onMessageMessage || !(message instanceof com.swiftmq.jms.MessageImpl))
+        if (mySession.withinOnMessage && message == mySession.onMessageMessage || !(message instanceof MessageImpl))
             msg = (MessageImpl) MessageCloner.cloneMessage(message);
         else
             msg = (MessageImpl) message;
@@ -154,6 +159,7 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
             message.setJMSDeliveryMode(deliveryMode);
             message.setJMSPriority(priority);
             message.setJMSExpiration(timeToLive);
+            message.setJMSDeliveryTime(System.currentTimeMillis() + deliveryDelay);
         }
 
         if (!disableTimestamp) {
@@ -178,15 +184,28 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
         return msg;
     }
 
-    void processSend(int producerId, Message message) throws JMSException {
+    MessageImpl rerouteScheduler(MessageImpl msg, DestinationImpl destImpl) throws JMSException {
+        msg.setStringProperty("streams_scheduler_delay", DELAY_FORMAT.format(System.currentTimeMillis() + deliveryDelay));
+        msg.setStringProperty("streams_scheduler_destination", destImpl.toString());
+        msg.setStringProperty("streams_scheduler_destination_type", isTopicDestination(destImpl) ? "topic" : "queue");
+        if (msg.getJMSExpiration() > 0)
+            msg.setLongProperty("streams_scheduler_expiration", msg.getJMSExpiration());
+        msg.setJMSDestination(new QueueImpl("streams_scheduler_input"));
+        return msg;
+    }
+
+    void processSend(int producerId, Message message, CompletionListener completionListener) throws JMSException {
         boolean transacted = mySession.getTransacted();
         MessageImpl msg = (MessageImpl) message;
+        // JMS 2.0
+        if (deliveryDelay > 0)
+            msg = rerouteScheduler(msg, (DestinationImpl) message.getJMSDestination());
 
         if (transacted) {
             if (MessageTracker.enabled) {
                 MessageTracker.getInstance().track((MessageImpl) msg, new String[]{mySession.myConnection.toString(), mySession.toString(), toString()}, "processSend, storeTransactedMessage");
             }
-            mySession.storeTransactedMessage(this, msg);
+            mySession.storeTransactedMessage(this, msg, completionListener);
         } else {
             nSend++;
             ProduceMessageReply reply = null;
@@ -204,6 +223,7 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
                     request = new ProduceMessageRequest(this, mySession.dispatchId, producerId, null, b);
                 } else
                     request = new ProduceMessageRequest(this, mySession.dispatchId, producerId, msg, null);
+
                 request.setReplyRequired(replyRequired);
                 if (MessageTracker.enabled) {
                     MessageTracker.getInstance().track((MessageImpl) msg, new String[]{mySession.myConnection.toString(), mySession.toString(), toString()}, "processSend ...");
@@ -216,15 +236,21 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
                 if (MessageTracker.enabled) {
                     MessageTracker.getInstance().track((MessageImpl) msg, new String[]{mySession.myConnection.toString(), mySession.toString(), toString()}, "processSend, exception=" + e);
                 }
-                e.printStackTrace();
+                if (completionListener != null)
+                    Completioner.instance().complete(msg, e, completionListener);
                 throw ExceptionConverter.convert(e);
             }
-
             if (replyRequired) {
-                if (reply == null)
-                    throw new JMSException("Request was cancelled (reply == null)");
+                if (reply == null) {
+                    JMSException e = new JMSException("Request was cancelled (reply == null)");
+                    if (completionListener != null)
+                        Completioner.instance().complete(msg, e, completionListener);
+                    throw e;
+                }
                 nSend = 0;
                 if (!reply.isOk()) {
+                    if (completionListener != null)
+                        Completioner.instance().complete(msg, reply.getException(), completionListener);
                     throw ExceptionConverter.convert(reply.getException());
                 }
                 currentDelay = reply.getDelay();
@@ -234,6 +260,8 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
                     } catch (Exception ignored) {
                     }
                 }
+                if (completionListener != null)
+                    Completioner.instance().complete(msg, completionListener);
             }
         }
         // fix 1.2
@@ -261,81 +289,19 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
     }
 
     public void send(Message message) throws JMSException {
-        verifyState();
-
-        if (this.destImpl == null)
-            throw new UnsupportedOperationException("Cannot send unidentified on an unidentified MessageProducer!");
-
-        Message msg = initMessageForSend(message);
-        msg.setJMSDestination(destImpl);
-        // TCK: Foreign messages
-        if (msg != message)
-            message.setJMSDestination(destImpl);
-        if (isTopicDestination() && clientId != null)
-            msg.setStringProperty(MessageImpl.PROP_CLIENT_ID, clientId);
-        processSend(producerId, msg);
+        send(message, null);
     }
 
     public void send(Message message, int deliveryMode, int priority, long ttl) throws JMSException {
-        verifyState();
-
-        if (this.destImpl == null)
-            throw new UnsupportedOperationException("Cannot send unidentified on an unidentified MessageProducer!");
-
-        Message msg = initMessageForSend(message);
-        msg.setJMSDeliveryMode(deliveryMode);
-        msg.setJMSPriority(priority);
-        msg.setJMSExpiration(ttl);
-        msg.setJMSDestination(destImpl);
-        // TCK: Foreign message
-        if (msg != message) {
-            message.setJMSDeliveryMode(deliveryMode);
-            message.setJMSPriority(priority);
-            message.setJMSExpiration(ttl);
-            message.setJMSDestination(destImpl);
-        }
-        if (isTopicDestination() && clientId != null)
-            msg.setStringProperty(MessageImpl.PROP_CLIENT_ID, clientId);
-        processSend(producerId, msg);
+        send(message, deliveryMode, priority, ttl, null);
     }
 
     public void send(Destination dest, Message message) throws JMSException {
-        verifyState();
-
-        if (this.destImpl != null)
-            throw new UnsupportedOperationException("This send method is only supported for unidentified MessageProducer!");
-
-        Message msg = initMessageForSend(message);
-        msg.setJMSDestination(dest);
-        // TCK: Foreign message
-        if (msg != message)
-            message.setJMSDestination(dest);
-        if (isTopicDestination((DestinationImpl) dest) && clientId != null)
-            msg.setStringProperty(MessageImpl.PROP_CLIENT_ID, clientId);
-        processSend(-1, msg);
+        send(dest, message, null);
     }
 
     public void send(Destination dest, Message message, int deliveryMode, int priority, long ttl) throws JMSException {
-        verifyState();
-
-        if (this.destImpl != null)
-            throw new UnsupportedOperationException("This send method is only supported for unidentified MessageProducer!");
-
-        Message msg = initMessageForSend(message);
-        msg.setJMSDeliveryMode(deliveryMode);
-        msg.setJMSPriority(priority);
-        msg.setJMSExpiration(ttl);
-        msg.setJMSDestination(dest);
-        // TCK: Foreign message
-        if (msg != message) {
-            message.setJMSDeliveryMode(deliveryMode);
-            message.setJMSPriority(priority);
-            message.setJMSExpiration(ttl);
-            message.setJMSDestination(dest);
-        }
-        if (isTopicDestination((DestinationImpl) dest) && clientId != null)
-            msg.setStringProperty(MessageImpl.PROP_CLIENT_ID, clientId);
-        processSend(-1, msg);
+        send(dest, message, deliveryMode, priority, ttl, null);
     }
     // <-- JMS 1.1
 
@@ -541,34 +507,99 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
         _close(true);
     }
 
+    /*
+     * JMS 2.0
+     */
     @Override
-    public void setDeliveryDelay(long l) throws JMSException {
-        throw new JMSException("Operation not supported");
+    public void setDeliveryDelay(long deliveryDelay) throws JMSException {
+        this.deliveryDelay = deliveryDelay;
     }
 
     @Override
     public long getDeliveryDelay() throws JMSException {
-        return 0;
+        return deliveryDelay;
     }
 
     @Override
     public void send(Message message, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
+        verifyState();
+
+        if (this.destImpl == null)
+            throw new UnsupportedOperationException("Cannot send unidentified on an unidentified MessageProducer!");
+
+        Message msg = initMessageForSend(message);
+        msg.setJMSDestination(destImpl);
+        // TCK: Foreign messages
+        if (msg != message)
+            message.setJMSDestination(destImpl);
+        if (isTopicDestination() && clientId != null)
+            msg.setStringProperty(MessageImpl.PROP_CLIENT_ID, clientId);
+        processSend(producerId, msg, completionListener);
     }
 
     @Override
-    public void send(Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
+    public void send(Message message, int deliveryMode, int priority, long ttl, CompletionListener completionListener) throws JMSException {
+        verifyState();
+
+        if (this.destImpl == null)
+            throw new UnsupportedOperationException("Cannot send unidentified on an unidentified MessageProducer!");
+
+        Message msg = initMessageForSend(message);
+        msg.setJMSDeliveryMode(deliveryMode);
+        msg.setJMSPriority(priority);
+        msg.setJMSExpiration(ttl);
+        msg.setJMSDestination(destImpl);
+        // TCK: Foreign message
+        if (msg != message) {
+            message.setJMSDeliveryMode(deliveryMode);
+            message.setJMSPriority(priority);
+            message.setJMSExpiration(ttl);
+            message.setJMSDestination(destImpl);
+        }
+        if (isTopicDestination() && clientId != null)
+            msg.setStringProperty(MessageImpl.PROP_CLIENT_ID, clientId);
+        processSend(producerId, msg, completionListener);
     }
 
     @Override
-    public void send(Destination destination, Message message, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
+    public void send(Destination dest, Message message, CompletionListener completionListener) throws JMSException {
+        verifyState();
+
+        if (this.destImpl != null)
+            throw new UnsupportedOperationException("This send method is only supported for unidentified MessageProducer!");
+
+        Message msg = initMessageForSend(message);
+        msg.setJMSDestination(dest);
+        // TCK: Foreign message
+        if (msg != message)
+            message.setJMSDestination(dest);
+        if (isTopicDestination((DestinationImpl) dest) && clientId != null)
+            msg.setStringProperty(MessageImpl.PROP_CLIENT_ID, clientId);
+        processSend(-1, msg, completionListener);
     }
 
     @Override
-    public void send(Destination destination, Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
+    public void send(Destination dest, Message message, int deliveryMode, int priority, long ttl, CompletionListener completionListener) throws JMSException {
+        verifyState();
+
+        if (this.destImpl != null)
+            throw new UnsupportedOperationException("This send method is only supported for unidentified MessageProducer!");
+
+        Message msg = initMessageForSend(message);
+        msg.setJMSDeliveryMode(deliveryMode);
+        msg.setJMSPriority(priority);
+        msg.setJMSExpiration(ttl);
+        msg.setJMSDestination(dest);
+        // TCK: Foreign message
+        if (msg != message) {
+            message.setJMSDeliveryMode(deliveryMode);
+            message.setJMSPriority(priority);
+            message.setJMSExpiration(ttl);
+            message.setJMSDestination(dest);
+        }
+        if (isTopicDestination((DestinationImpl) dest) && clientId != null)
+            msg.setStringProperty(MessageImpl.PROP_CLIENT_ID, clientId);
+        processSend(-1, msg, completionListener);
     }
 }
 

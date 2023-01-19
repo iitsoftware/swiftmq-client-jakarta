@@ -310,7 +310,7 @@ public class ConnectionFactoryImpl
                 parameters.put(SwiftMQConnectionFactory.INPUT_EXTEND_SIZE, new Integer(inputExtendSize));
                 parameters.put(SwiftMQConnectionFactory.OUTPUT_BUFFER_SIZE, new Integer(outputBufferSize));
                 parameters.put(SwiftMQConnectionFactory.OUTPUT_EXTEND_SIZE, new Integer(outputExtendSize));
-                SocketFactory sf = (SocketFactory) Class.forName(socketFactoryClass).newInstance();
+                SocketFactory sf = (SocketFactory) Class.forName(socketFactoryClass).getDeclaredConstructor().newInstance();
                 if (sf instanceof SocketFactory2)
                     ((SocketFactory2) sf).setReceiveBufferSize(inputBufferSize);
                 parameters.put(SwiftMQConnectionFactory.SOCKETFACTORY, sf);
@@ -475,36 +475,6 @@ public class ConnectionFactoryImpl
         return (qc);
     }
 
-    @Override
-    public JMSContext createContext() {
-        throw new RuntimeException("Operation not supported");
-    }
-
-    @Override
-    public JMSContext createContext(String s, String s1) {
-        throw new RuntimeException("Operation not supported");
-    }
-
-    @Override
-    public JMSContext createContext(String s, String s1, int i) {
-        throw new RuntimeException("Operation not supported");
-    }
-
-    @Override
-    public JMSContext createContext(int i) {
-        throw new RuntimeException("Operation not supported");
-    }
-
-    @Override
-    public XAJMSContext createXAContext() {
-        throw new RuntimeException("Operation not supported");
-    }
-
-    @Override
-    public XAJMSContext createXAContext(String s, String s1) {
-        throw new RuntimeException("Operation not supported");
-    }
-
     public String toString() {
         StringBuffer s = new StringBuffer();
         s.append("[ConnectionFactoryImpl, socketFactoryClass=");
@@ -561,6 +531,60 @@ public class ConnectionFactoryImpl
         s.append(duplicateBacklogSize);
         s.append("]");
         return s.toString();
+    }
+
+    /*
+     * TODO: JMS 2.0
+     */
+
+    @Override
+    public JMSContext createContext() {
+        try {
+            return new JMSContextImpl(createConnection());
+        } catch (JMSException e) {
+            throw new JMSRuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public JMSContext createContext(String userName, String password) {
+        try {
+            return new JMSContextImpl(createConnection(userName, password));
+        } catch (JMSException e) {
+            throw new JMSRuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public JMSContext createContext(String userName, String password, int sessionMode) {
+        try {
+            JMSContextImpl context = new JMSContextImpl(createConnection(userName, password));
+            context.createSession(sessionMode);
+            return context;
+        } catch (JMSException e) {
+            throw new JMSRuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public JMSContext createContext(int sessionMode) {
+        try {
+            JMSContextImpl context = new JMSContextImpl(createConnection());
+            context.createSession(sessionMode);
+            return context;
+        } catch (JMSException e) {
+            throw new JMSRuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public XAJMSContext createXAContext() {
+        return null;
+    }
+
+    @Override
+    public XAJMSContext createXAContext(String userName, String password) {
+        return null;
     }
 }
 

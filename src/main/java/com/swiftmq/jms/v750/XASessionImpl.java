@@ -180,33 +180,36 @@ public class XASessionImpl implements XASession {
         return session.requestBlockable(request);
     }
 
+    /*
+     * TODO: JMS 2.0
+     */
     @Override
     public MessageConsumer createSharedConsumer(Topic topic, String s) throws JMSException {
-        throw new JMSException("Operation not supported");
+        return null;
     }
 
     @Override
     public MessageConsumer createSharedConsumer(Topic topic, String s, String s1) throws JMSException {
-        throw new JMSException("Operation not supported");
+        return null;
     }
 
     @Override
     public MessageConsumer createDurableConsumer(Topic topic, String s) throws JMSException {
-        throw new JMSException("Operation not supported");
+        return null;
     }
 
     @Override
     public MessageConsumer createDurableConsumer(Topic topic, String s, String s1, boolean b) throws JMSException {
-        throw new JMSException("Operation not supported");
+        return null;
     }
 
     @Override
     public MessageConsumer createSharedDurableConsumer(Topic topic, String s) throws JMSException {
-        throw new JMSException("Operation not supported");
+        return null;
     }
 
     @Override
     public MessageConsumer createSharedDurableConsumer(Topic topic, String s, String s1) throws JMSException {
-        throw new JMSException("Operation not supported");
+        return null;
     }
 }
