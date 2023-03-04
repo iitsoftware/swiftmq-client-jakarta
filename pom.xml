@@ -7,7 +7,7 @@
 
   <groupId>com.swiftmq</groupId>
   <artifactId>swiftmq-client-jakarta</artifactId>
-  <version>12.5.3</version>
+  <version>12.5.4</version>
 
   <name>SwiftMQ Client (Jakarta)</name>
   <description>Client for SwiftMQ Messaging System with Jakarta JMS 1.1, AMQP 1.0 and file transfer over JMS.
@@ -49,7 +49,7 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-      <version>1.4.19</version>
+      <version>1.4.20</version>
     </dependency>
     <dependency>
       <groupId>jakarta.jms</groupId>
