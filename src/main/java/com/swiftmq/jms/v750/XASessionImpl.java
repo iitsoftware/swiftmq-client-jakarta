@@ -19,8 +19,8 @@ package com.swiftmq.jms.v750;
 
 import com.swiftmq.tools.requestreply.Reply;
 import com.swiftmq.tools.requestreply.Request;
-import jakarta.jms.*;
 
+import jakarta.jms.*;
 import javax.transaction.xa.XAResource;
 import java.io.Serializable;
 import java.util.List;
@@ -63,6 +63,16 @@ public class XASessionImpl implements XASession {
         return session.createConsumer(destination, selector, noLocal);
     }
 
+    @Override
+    public MessageConsumer createSharedConsumer(Topic topic, String s) throws JMSException {
+        return null;
+    }
+
+    @Override
+    public MessageConsumer createSharedConsumer(Topic topic, String s, String s1) throws JMSException {
+        return null;
+    }
+
     public Queue createQueue(String s) throws JMSException {
         return session.createQueue(s);
     }
@@ -77,6 +87,26 @@ public class XASessionImpl implements XASession {
 
     public TopicSubscriber createDurableSubscriber(Topic topic, String s, String s1, boolean b) throws JMSException {
         return session.createDurableSubscriber(topic, s, s1, b);
+    }
+
+    @Override
+    public MessageConsumer createDurableConsumer(Topic topic, String s) throws JMSException {
+        return null;
+    }
+
+    @Override
+    public MessageConsumer createDurableConsumer(Topic topic, String s, String s1, boolean b) throws JMSException {
+        return null;
+    }
+
+    @Override
+    public MessageConsumer createSharedDurableConsumer(Topic topic, String s) throws JMSException {
+        return null;
+    }
+
+    @Override
+    public MessageConsumer createSharedDurableConsumer(Topic topic, String s, String s1) throws JMSException {
+        return null;
     }
 
     public QueueBrowser createBrowser(Queue queue) throws JMSException {
@@ -178,35 +208,5 @@ public class XASessionImpl implements XASession {
 
     Reply request(Request request) throws Exception {
         return session.requestBlockable(request);
-    }
-
-    @Override
-    public MessageConsumer createSharedConsumer(Topic topic, String s) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public MessageConsumer createSharedConsumer(Topic topic, String s, String s1) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public MessageConsumer createDurableConsumer(Topic topic, String s) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public MessageConsumer createDurableConsumer(Topic topic, String s, String s1, boolean b) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public MessageConsumer createSharedDurableConsumer(Topic topic, String s) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public MessageConsumer createSharedDurableConsumer(Topic topic, String s, String s1) throws JMSException {
-        throw new JMSException("Operation not supported");
     }
 }

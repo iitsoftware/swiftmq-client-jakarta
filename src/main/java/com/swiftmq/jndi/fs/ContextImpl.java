@@ -25,7 +25,7 @@ import javax.naming.*;
 import java.io.*;
 import java.util.Hashtable;
 
-public class ContextImpl implements Context, java.io.Serializable, NameParser {
+public class ContextImpl implements Context, Serializable, NameParser {
     File contextDir = null;
     XStream xStream = null;
 

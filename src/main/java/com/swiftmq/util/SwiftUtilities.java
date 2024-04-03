@@ -18,8 +18,8 @@
 package com.swiftmq.util;
 
 import com.swiftmq.swiftlet.SwiftletManager;
-import jakarta.jms.Session;
 
+import jakarta.jms.Session;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;

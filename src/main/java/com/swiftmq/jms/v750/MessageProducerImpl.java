@@ -22,12 +22,15 @@ import com.swiftmq.jms.smqp.v750.CloseProducerRequest;
 import com.swiftmq.jms.smqp.v750.ProduceMessageReply;
 import com.swiftmq.jms.smqp.v750.ProduceMessageRequest;
 import com.swiftmq.jms.smqp.v750.SMQPUtil;
+import com.swiftmq.tools.concurrent.AtomicWrappingCounterInteger;
 import com.swiftmq.tools.requestreply.*;
-import com.swiftmq.tools.tracking.MessageTracker;
 import com.swiftmq.tools.util.DataByteArrayOutputStream;
 import com.swiftmq.tools.util.IdGenerator;
-import jakarta.jms.IllegalStateException;
+
 import jakarta.jms.*;
+import jakarta.jms.IllegalStateException;
+
+import java.io.IOException;
 
 public class MessageProducerImpl implements MessageProducerExtended, RequestRetryValidator {
     private static final boolean ASYNC_SEND = Boolean.valueOf(System.getProperty("swiftmq.jms.persistent.asyncsend", "false")).booleanValue();
@@ -41,7 +44,7 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
     int deliveryMode;
     int priority;
     long timeToLive;
-    int tsInc = 0;
+    AtomicWrappingCounterInteger tsInc = new AtomicWrappingCounterInteger(0);
     int nSend = 0;
     long currentDelay = 0;
     int replyThreshold = 0;
@@ -51,7 +54,7 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
     // JMS 1.1
     DestinationImpl destImpl = null;
     String clientId = null;
-    DataByteArrayOutputStream dbos = new DataByteArrayOutputStream(2048);
+
 
     public MessageProducerImpl(SessionImpl mySession, int producerId,
                                RequestRegistry requestRegistry,
@@ -126,9 +129,7 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
 
     private String nextId() {
         StringBuffer b = new StringBuffer(idPrefix);
-        b.append(tsInc++);
-        if (tsInc == Integer.MAX_VALUE)
-            tsInc = 0;
+        b.append(tsInc.getAndIncrement());
         return b.toString();
     }
 
@@ -136,7 +137,7 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
         if (message == null)
             throw new JMSException("The message you try to send is NULL!");
         MessageImpl msg = null;
-        if (mySession.withinOnMessage && message == mySession.onMessageMessage || !(message instanceof com.swiftmq.jms.MessageImpl))
+        if (mySession.withinOnMessage && message == mySession.onMessageMessage || !(message instanceof MessageImpl))
             msg = (MessageImpl) MessageCloner.cloneMessage(message);
         else
             msg = (MessageImpl) message;
@@ -183,9 +184,6 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
         MessageImpl msg = (MessageImpl) message;
 
         if (transacted) {
-            if (MessageTracker.enabled) {
-                MessageTracker.getInstance().track((MessageImpl) msg, new String[]{mySession.myConnection.toString(), mySession.toString(), toString()}, "processSend, storeTransactedMessage");
-            }
             mySession.storeTransactedMessage(this, msg);
         } else {
             nSend++;
@@ -194,29 +192,13 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
             try {
                 ProduceMessageRequest request = null;
                 if (!replyRequired) {
-                    byte[] b;
-                    synchronized (dbos) {
-                        dbos.rewind();
-                        msg.writeContent(dbos);
-                        b = new byte[dbos.getCount()];
-                        System.arraycopy(dbos.getBuffer(), 0, b, 0, b.length);
-                    }
+                    byte[] b = getBytes(msg);
                     request = new ProduceMessageRequest(this, mySession.dispatchId, producerId, null, b);
                 } else
                     request = new ProduceMessageRequest(this, mySession.dispatchId, producerId, msg, null);
                 request.setReplyRequired(replyRequired);
-                if (MessageTracker.enabled) {
-                    MessageTracker.getInstance().track((MessageImpl) msg, new String[]{mySession.myConnection.toString(), mySession.toString(), toString()}, "processSend ...");
-                }
                 reply = (ProduceMessageReply) requestRegistry.request(request);
-                if (MessageTracker.enabled) {
-                    MessageTracker.getInstance().track((MessageImpl) msg, new String[]{mySession.myConnection.toString(), mySession.toString(), toString()}, "processSend done, reply=" + reply);
-                }
             } catch (Exception e) {
-                if (MessageTracker.enabled) {
-                    MessageTracker.getInstance().track((MessageImpl) msg, new String[]{mySession.myConnection.toString(), mySession.toString(), toString()}, "processSend, exception=" + e);
-                }
-                e.printStackTrace();
                 throw ExceptionConverter.convert(e);
             }
 
@@ -238,6 +220,16 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
         }
         // fix 1.2
         msg.reset();
+    }
+
+    private byte[] getBytes(MessageImpl msg) throws IOException {
+        DataByteArrayOutputStream dbos = new DataByteArrayOutputStream(2048);
+        byte[] b;
+        dbos.rewind();
+        msg.writeContent(dbos);
+        b = new byte[dbos.getCount()];
+        System.arraycopy(dbos.getBuffer(), 0, b, 0, b.length);
+        return b;
     }
 
     public void setDestinationImpl(Destination destImpl) {
@@ -336,6 +328,26 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
         if (isTopicDestination((DestinationImpl) dest) && clientId != null)
             msg.setStringProperty(MessageImpl.PROP_CLIENT_ID, clientId);
         processSend(-1, msg);
+    }
+
+    @Override
+    public void send(Message message, CompletionListener completionListener) throws JMSException {
+
+    }
+
+    @Override
+    public void send(Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
+
+    }
+
+    @Override
+    public void send(Destination destination, Message message, CompletionListener completionListener) throws JMSException {
+
+    }
+
+    @Override
+    public void send(Destination destination, Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
+
     }
     // <-- JMS 1.1
 
@@ -482,6 +494,16 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
         return (timeToLive);
     }
 
+    @Override
+    public void setDeliveryDelay(long l) throws JMSException {
+
+    }
+
+    @Override
+    public long getDeliveryDelay() throws JMSException {
+        return 0;
+    }
+
     /**
      * Set the default length of time in milliseconds from its dispatch time
      * that a produced message should be retained by the message system.
@@ -539,36 +561,6 @@ public class MessageProducerImpl implements MessageProducerExtended, RequestRetr
      */
     public void close() throws JMSException {
         _close(true);
-    }
-
-    @Override
-    public void setDeliveryDelay(long l) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public long getDeliveryDelay() throws JMSException {
-        return 0;
-    }
-
-    @Override
-    public void send(Message message, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public void send(Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public void send(Destination destination, Message message, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public void send(Destination destination, Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
     }
 }
 

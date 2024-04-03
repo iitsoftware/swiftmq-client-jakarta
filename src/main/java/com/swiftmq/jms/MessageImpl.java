@@ -18,13 +18,12 @@
 package com.swiftmq.jms;
 
 import com.swiftmq.swiftlet.queue.MessageIndex;
-import com.swiftmq.tools.tracking.MessageTracker;
 import com.swiftmq.tools.util.DataByteArrayInputStream;
 import com.swiftmq.tools.util.DataByteArrayOutputStream;
 import com.swiftmq.tools.util.LazyUTF8String;
 import com.swiftmq.tools.util.LengthCaptureDataInput;
-import jakarta.jms.*;
 
+import jakarta.jms.*;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -949,6 +948,16 @@ public class MessageImpl implements Message, Serializable {
         this.expiration = expiration;
     }
 
+    @Override
+    public long getJMSDeliveryTime() throws JMSException {
+        return 0;
+    }
+
+    @Override
+    public void setJMSDeliveryTime(long l) throws JMSException {
+
+    }
+
     /**
      * Get the message priority.
      * <p/>
@@ -1392,21 +1401,9 @@ public class MessageImpl implements Message, Serializable {
      */
     public void acknowledge() throws JMSException {
         if (myConsumer != null) {
-            if (MessageTracker.enabled) {
-                MessageTracker.getInstance().track(this, new String[]{myConsumer.toString()}, "acknowledge ...");
-            }
             cancelled = myConsumer.acknowledgeMessage(this);
-            if (MessageTracker.enabled) {
-                MessageTracker.getInstance().track(this, new String[]{myConsumer.toString()}, "acknowledge done, cancelled=" + cancelled);
-            }
         } else if (mySession != null) {
-            if (MessageTracker.enabled) {
-                MessageTracker.getInstance().track(this, new String[]{mySession.toString()}, "acknowledge ...");
-            }
             cancelled = mySession.acknowledgeMessage(messageIndex);
-            if (MessageTracker.enabled) {
-                MessageTracker.getInstance().track(this, new String[]{mySession.toString()}, "acknowledge done, cancelled=" + cancelled);
-            }
         }
     }
 
@@ -1419,27 +1416,17 @@ public class MessageImpl implements Message, Serializable {
     public void clearBody() throws JMSException {
     }
 
-    public void reset() throws JMSException {
-    }
-
-    @Override
-    public long getJMSDeliveryTime() throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public void setJMSDeliveryTime(long l) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
     @Override
     public <T> T getBody(Class<T> aClass) throws JMSException {
-        throw new JMSException("Operation not supported");
+        return null;
     }
 
     @Override
     public boolean isBodyAssignableTo(Class aClass) throws JMSException {
-        throw new JMSException("Operation not supported");
+        return false;
+    }
+
+    public void reset() throws JMSException {
     }
 
     public String toString() {

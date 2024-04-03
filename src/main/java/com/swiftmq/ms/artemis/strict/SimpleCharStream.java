@@ -238,23 +238,17 @@ public class SimpleCharStream {
         return bufline[bufpos];
     }
 
-    /**
-     * Get token beginning column number.
-     */
+    /** Get token beginning column number. */
     public int getBeginColumn() {
         return bufcolumn[tokenBegin];
     }
 
-    /**
-     * Get token beginning line number.
-     */
+    /** Get token beginning line number. */
     public int getBeginLine() {
         return bufline[tokenBegin];
     }
 
-    /**
-     * Backup a number of characters.
-     */
+    /** Backup a number of characters. */
     public void backup(int amount) {
 
         inBuf += amount;
@@ -285,9 +279,7 @@ public class SimpleCharStream {
         this(dstream, startline, startcolumn, 4096);
     }
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public SimpleCharStream(java.io.Reader dstream) {
         this(dstream, 1, 1, 4096);
     }
@@ -359,9 +351,7 @@ public class SimpleCharStream {
         this(dstream, startline, startcolumn, 4096);
     }
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public SimpleCharStream(java.io.InputStream dstream, String encoding) throws java.io.UnsupportedEncodingException {
         this(dstream, encoding, 1, 1, 4096);
     }
@@ -447,9 +437,7 @@ public class SimpleCharStream {
         return ret;
     }
 
-    /**
-     * Reset buffer when finished.
-     */
+    /** Reset buffer when finished. */
     public void Done() {
         buffer = null;
         bufline = null;
@@ -472,29 +460,32 @@ public class SimpleCharStream {
         int i = 0, j = 0, k = 0;
         int nextColDiff = 0, columnDiff = 0;
 
-        while (i < len && bufline[j = start % bufsize] == bufline[k = ++start % bufsize]) {
-            bufline[j] = newLine;
-            nextColDiff = columnDiff + bufcolumn[k] - bufcolumn[j];
-            bufcolumn[j] = newCol + columnDiff;
-            columnDiff = nextColDiff;
-            i++;
-        }
-
-        if (i < len) {
-            bufline[j] = newLine++;
-            bufcolumn[j] = newCol + columnDiff;
-
-            while (i++ < len) {
-                if (bufline[j = start % bufsize] != bufline[++start % bufsize])
-                    bufline[j] = newLine++;
-                else
-                    bufline[j] = newLine;
-            }
-        }
-
-        line = bufline[j];
-        column = bufcolumn[j];
+        while (i < len && bufline[j = start % bufsize] == bufline[k = ++start % bufsize])
+    {
+      bufline[j] = newLine;
+      nextColDiff = columnDiff + bufcolumn[k] - bufcolumn[j];
+      bufcolumn[j] = newCol + columnDiff;
+      columnDiff = nextColDiff;
+      i++;
     }
+
+    if (i < len)
+    {
+      bufline[j] = newLine++;
+      bufcolumn[j] = newCol + columnDiff;
+
+      while (i++ < len)
+      {
+        if (bufline[j = start % bufsize] != bufline[++start % bufsize])
+          bufline[j] = newLine++;
+        else
+          bufline[j] = newLine;
+      }
+    }
+
+    line = bufline[j];
+    column = bufcolumn[j];
+  }
 
 }
 /* JavaCC - OriginalChecksum=3e3bb81d87813f4a331352e095b2c766 (do not edit this line) */

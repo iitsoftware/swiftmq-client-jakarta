@@ -146,9 +146,7 @@ public class TokenMgrError extends Error {
      * Constructors of various flavors follow.
      */
 
-    /**
-     * No arg constructor.
-     */
+    /** No arg constructor. */
     public TokenMgrError() {
     }
 
@@ -165,6 +163,6 @@ public class TokenMgrError extends Error {
      */
     public TokenMgrError(boolean EOFSeen, int lexState, int errorLine, int errorColumn, String errorAfter, char curChar, int reason) {
         this(LexicalError(EOFSeen, lexState, errorLine, errorColumn, errorAfter, curChar), reason);
-    }
+  }
 }
 /* JavaCC - OriginalChecksum=1d7fcead79801d35d96e1a0aab1e5ec0 (do not edit this line) */

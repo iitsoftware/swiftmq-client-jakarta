@@ -23,8 +23,8 @@ import com.swiftmq.tools.dump.Dumpable;
 import com.swiftmq.tools.dump.DumpableFactory;
 import com.swiftmq.tools.util.DataByteArrayInputStream;
 import com.swiftmq.tools.util.DataByteArrayOutputStream;
-import jakarta.jms.BytesMessage;
 
+import jakarta.jms.BytesMessage;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

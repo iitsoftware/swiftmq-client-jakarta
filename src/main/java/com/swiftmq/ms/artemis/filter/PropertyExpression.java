@@ -45,7 +45,7 @@ public class PropertyExpression implements Expression {
     }
 
     /**
-     * @see java.lang.Object#toString()
+     * @see Object#toString()
      */
     @Override
     public String toString() {
@@ -53,7 +53,7 @@ public class PropertyExpression implements Expression {
     }
 
     /**
-     * @see java.lang.Object#hashCode()
+     * @see Object#hashCode()
      */
     @Override
     public int hashCode() {
@@ -61,7 +61,7 @@ public class PropertyExpression implements Expression {
     }
 
     /**
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see Object#equals(Object)
      */
     @Override
     public boolean equals(Object o) {
@@ -70,6 +70,6 @@ public class PropertyExpression implements Expression {
         }
         return name.equals(((PropertyExpression) o).name);
 
-    }
+   }
 
 }

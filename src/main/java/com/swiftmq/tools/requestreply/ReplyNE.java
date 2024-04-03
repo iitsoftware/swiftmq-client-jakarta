@@ -21,8 +21,8 @@ import com.swiftmq.swiftlet.auth.AuthenticationException;
 import com.swiftmq.swiftlet.auth.ResourceLimitException;
 import com.swiftmq.swiftlet.queue.QueueException;
 import com.swiftmq.swiftlet.queue.QueueLimitException;
-import jakarta.jms.InvalidDestinationException;
 
+import jakarta.jms.InvalidDestinationException;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

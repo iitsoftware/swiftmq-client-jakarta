@@ -18,7 +18,6 @@
 package com.swiftmq.jms;
 
 import jakarta.jms.Destination;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

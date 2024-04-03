@@ -19,6 +19,7 @@ package com.swiftmq.jms;
 
 import com.swiftmq.tools.requestreply.TimeoutException;
 import com.swiftmq.tools.requestreply.TransportException;
+
 import jakarta.jms.JMSException;
 
 public class ExceptionConverter {

@@ -22,8 +22,8 @@ import com.swiftmq.jms.smqp.v750.CreateTmpQueueReply;
 import com.swiftmq.jms.smqp.v750.CreateTmpQueueRequest;
 import com.swiftmq.tools.requestreply.Reply;
 import com.swiftmq.tools.requestreply.Request;
-import jakarta.jms.JMSException;
 
+import jakarta.jms.JMSException;
 import java.util.List;
 
 public class TemporaryQueueRecreator implements Recreatable {

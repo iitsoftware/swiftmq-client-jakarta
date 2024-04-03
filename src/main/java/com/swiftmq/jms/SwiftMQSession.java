@@ -18,6 +18,7 @@
 package com.swiftmq.jms;
 
 import com.swiftmq.swiftlet.queue.MessageIndex;
+
 import jakarta.jms.JMSException;
 
 public interface SwiftMQSession {

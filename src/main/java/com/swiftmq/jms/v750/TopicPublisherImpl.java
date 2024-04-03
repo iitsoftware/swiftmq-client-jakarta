@@ -23,11 +23,11 @@ import com.swiftmq.jms.smqp.v750.CreatePublisherRequest;
 import com.swiftmq.tools.requestreply.Reply;
 import com.swiftmq.tools.requestreply.Request;
 import com.swiftmq.tools.requestreply.RequestRegistry;
+
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.Topic;
 import jakarta.jms.TopicPublisher;
-
 import java.util.List;
 
 public class TopicPublisherImpl extends MessageProducerImpl

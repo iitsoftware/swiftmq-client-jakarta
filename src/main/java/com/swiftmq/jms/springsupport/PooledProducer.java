@@ -53,6 +53,16 @@ public class PooledProducer
         return internalProducer.getTimeToLive();
     }
 
+    @Override
+    public void setDeliveryDelay(long l) throws JMSException {
+
+    }
+
+    @Override
+    public long getDeliveryDelay() throws JMSException {
+        return 0;
+    }
+
     public void setTimeToLive(long l) throws JMSException {
         internalProducer.setTimeToLive(l);
     }
@@ -88,6 +98,26 @@ public class PooledProducer
         if (DEBUG)
             System.out.println(toString() + "/send, destination=" + destination + ", message=" + message + ", i=" + i + ", i1=" + i1 + ", l=" + l);
         internalProducer.send(destination, message, i, i1, l);
+    }
+
+    @Override
+    public void send(Message message, CompletionListener completionListener) throws JMSException {
+
+    }
+
+    @Override
+    public void send(Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
+
+    }
+
+    @Override
+    public void send(Destination destination, Message message, CompletionListener completionListener) throws JMSException {
+
+    }
+
+    @Override
+    public void send(Destination destination, Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
+
     }
 
     public Queue getQueue() throws JMSException {
@@ -141,36 +171,6 @@ public class PooledProducer
         if (DEBUG)
             System.out.println(toString() + "/publish, topic=" + topic + ", message=" + message + ", i=" + i + ", i1=" + i1 + ", l=" + l);
         internalProducer.send(topic, message, i, i1, l);
-    }
-
-    @Override
-    public void setDeliveryDelay(long l) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public long getDeliveryDelay() throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public void send(Message message, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public void send(Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public void send(Destination destination, Message message, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
-    }
-
-    @Override
-    public void send(Destination destination, Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
-        throw new JMSException("Operation not supported");
     }
 
     public String toString() {
