@@ -30,10 +30,9 @@ import com.swiftmq.tools.concurrent.Semaphore;
 import com.swiftmq.tools.queue.SingleProcessorQueue;
 import com.swiftmq.tools.requestreply.*;
 import com.swiftmq.util.SwiftUtilities;
-
-import jakarta.jms.*;
 import jakarta.jms.IllegalStateException;
 import jakarta.jms.Queue;
+import jakarta.jms.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -444,20 +443,20 @@ public class SessionImpl
 
     }
 
-    public QueueReceiver createReceiver(jakarta.jms.Queue queue) throws JMSException {
+    public QueueReceiver createReceiver(Queue queue) throws JMSException {
         verifyState();
 
         return (createReceiver(queue, null));
     }
 
-    public QueueReceiver createReceiver(jakarta.jms.Queue queue, String messageSelector)
+    public QueueReceiver createReceiver(Queue queue, String messageSelector)
             throws JMSException {
         verifyState();
 
         if (queue == null)
             throw new InvalidDestinationException("createReceiver, queue is null!");
         if (queue instanceof TemporaryQueueImpl && !((TemporaryQueueImpl) queue).isCreatungSession(this))
-            throw new JMSException("A receiver on a Temporaryjakarta.jms.Queue can only be created from the session the temporary queue was created from");
+            throw new JMSException("A receiver on a TemporaryQueue can only be created from the session the temporary queue was created from");
 
         QueueReceiverImpl qr = null;
         CreateConsumerReply reply = null;
@@ -489,7 +488,7 @@ public class SessionImpl
         return (qr);
     }
 
-    public QueueSender createSender(jakarta.jms.Queue queue) throws JMSException {
+    public QueueSender createSender(Queue queue) throws JMSException {
         verifyState();
 
         // queue can be null = unidentified sender!
@@ -720,7 +719,7 @@ public class SessionImpl
         return null;
     }
 
-    public jakarta.jms.Queue createQueue(String queueName) throws JMSException {
+    public Queue createQueue(String queueName) throws JMSException {
         verifyState();
         if (type == TYPE_TOPIC_SESSION)
             throw new IllegalStateException("Operation not allowed on this session type");
@@ -744,14 +743,14 @@ public class SessionImpl
         return new TopicImpl(topicName);
     }
 
-    public QueueBrowser createBrowser(jakarta.jms.Queue queue) throws JMSException {
+    public QueueBrowser createBrowser(Queue queue) throws JMSException {
         verifyState();
         if (type == TYPE_TOPIC_SESSION)
             throw new IllegalStateException("Operation not allowed on this session type");
         return (createBrowser(queue, null));
     }
 
-    public QueueBrowser createBrowser(jakarta.jms.Queue queue, String messageSelector)
+    public QueueBrowser createBrowser(Queue queue, String messageSelector)
             throws JMSException {
         verifyState();
         if (type == TYPE_TOPIC_SESSION)

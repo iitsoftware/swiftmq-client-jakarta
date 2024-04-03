@@ -1033,12 +1033,13 @@ public class HyphenatedParserTokenManager implements HyphenatedParserConstants {
         } while (start++ != end);
 }
 
-    private void jjCheckNAddTwoStates(int state1, int state2) {
-        jjCheckNAdd(state1);
-        jjCheckNAdd(state2);
-    }
+    private void jjCheckNAddTwoStates(int state1, int state2)
+{
+   jjCheckNAdd(state1);
+   jjCheckNAdd(state2);
+}
 
-    private void jjCheckNAddStates(int start, int end)
+private void jjCheckNAddStates(int start, int end)
 {
    do {
       jjCheckNAdd(jjnextStates[start]);

@@ -29,7 +29,6 @@ import com.swiftmq.swiftlet.threadpool.ThreadPool;
 import com.swiftmq.tools.queue.SingleProcessorQueue;
 import com.swiftmq.tools.requestreply.*;
 import com.swiftmq.tools.util.IdGenerator;
-
 import jakarta.jms.ConnectionConsumer;
 import jakarta.jms.JMSException;
 import jakarta.jms.ServerSession;

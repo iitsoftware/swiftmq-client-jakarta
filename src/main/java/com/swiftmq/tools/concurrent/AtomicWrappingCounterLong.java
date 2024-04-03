@@ -22,7 +22,6 @@ public class AtomicWrappingCounterLong {
     private final AtomicReference<Long> counter;
     private final long initialValue;
     private final long maxValue;
-
     public AtomicWrappingCounterLong(long initialValue) {
         this(initialValue, Long.MAX_VALUE);
     }

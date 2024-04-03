@@ -15,7 +15,6 @@
  *
  */
 package com.swiftmq.tools.collection;
-
 import java.util.Collection;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

@@ -1137,7 +1137,7 @@ public class HyphenatedParser implements HyphenatedParserConstants {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e); }
     token_source = new HyphenatedParserTokenManager(jj_input_stream);
-    token = new Token();
+        token = new Token();
         jj_ntk = -1;
     }
 
@@ -1154,32 +1154,33 @@ public class HyphenatedParser implements HyphenatedParserConstants {
     public void ReInit(InputStream stream, String encoding) {
         try {
             jj_input_stream.ReInit(stream, encoding, 1, 1);
-        } catch (UnsupportedEncodingException e) { throw new RuntimeException(e); }
-    token_source.ReInit(jj_input_stream);
+        } catch (UnsupportedEncodingException e) { throw new RuntimeException(e);
+        }
+        token_source.ReInit(jj_input_stream);
         token = new Token();
-        jj_ntk = -1;
-    }
+    jj_ntk = -1;
+  }
 
-    /** Constructor. */
+  /** Constructor. */
   public HyphenatedParser(Reader stream) {
     jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new HyphenatedParserTokenManager(jj_input_stream);
       token = new Token();
-      jj_ntk = -1;
+    jj_ntk = -1;
   }
 
-    /** Reinitialise. */
+  /** Reinitialise. */
   public void ReInit(Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
-    token_source.ReInit(jj_input_stream);
-      token = new Token();
-      jj_ntk = -1;
+      token_source.ReInit(jj_input_stream);
+    token = new Token();
+    jj_ntk = -1;
   }
 
   /** Constructor with generated Token Manager. */
   public HyphenatedParser(HyphenatedParserTokenManager tm) {
     token_source = tm;
-      token = new Token();
+    token = new Token();
     jj_ntk = -1;
   }
 
@@ -1195,9 +1196,9 @@ public class HyphenatedParser implements HyphenatedParserConstants {
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
-    if (token.kind == kind) {
-      return token;
-    }
+      if (token.kind == kind) {
+          return token;
+      }
       token = oldToken;
       throw generateParseException();
   }
@@ -1225,7 +1226,7 @@ public class HyphenatedParser implements HyphenatedParserConstants {
   final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
-      jj_ntk = -1;
+    jj_ntk = -1;
     return token;
   }
 
@@ -1241,9 +1242,9 @@ public class HyphenatedParser implements HyphenatedParserConstants {
 
     private int jj_ntk() {
         if ((jj_nt = token.next) == null)
-            return (jj_ntk = (token.next=token_source.getNextToken()).kind);
-        else
-            return (jj_ntk = jj_nt.kind);
+            return (jj_ntk = (token.next = token_source.getNextToken()).kind);
+    else
+      return (jj_ntk = jj_nt.kind);
   }
 
   /** Generate ParseException. */

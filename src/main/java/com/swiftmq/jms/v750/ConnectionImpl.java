@@ -43,9 +43,8 @@ import com.swiftmq.tools.timer.TimerRegistry;
 import com.swiftmq.tools.util.DataStreamOutputStream;
 import com.swiftmq.tools.util.LengthCaptureDataInput;
 import com.swiftmq.util.SwiftUtilities;
-
-import jakarta.jms.*;
 import jakarta.jms.IllegalStateException;
+import jakarta.jms.*;
 
 import java.io.IOException;
 import java.util.*;

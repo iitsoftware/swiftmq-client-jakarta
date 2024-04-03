@@ -193,9 +193,9 @@ public class ParseException extends Exception {
                         retval.append("\\u" + s.substring(s.length() - 4, s.length()));
                     } else {
                         retval.append(ch);
-                    }
-                    continue;
-            }
+              }
+              continue;
+        }
       }
       return retval.toString();
    }

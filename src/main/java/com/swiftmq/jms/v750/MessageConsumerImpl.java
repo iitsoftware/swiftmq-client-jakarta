@@ -29,9 +29,8 @@ import com.swiftmq.tools.concurrent.Semaphore;
 import com.swiftmq.tools.requestreply.*;
 import com.swiftmq.tools.util.IdGenerator;
 import com.swiftmq.tools.util.UninterruptableWaiter;
-
-import jakarta.jms.*;
 import jakarta.jms.IllegalStateException;
+import jakarta.jms.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
