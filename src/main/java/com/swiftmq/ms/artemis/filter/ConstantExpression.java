@@ -103,7 +103,7 @@ public class ConstantExpression implements Expression {
     }
 
     /**
-     * @see java.lang.Object#toString()
+     * @see Object#toString()
      */
     @Override
     public String toString() {
@@ -120,7 +120,7 @@ public class ConstantExpression implements Expression {
     }
 
     /**
-     * @see java.lang.Object#hashCode()
+     * @see Object#hashCode()
      */
     @Override
     public int hashCode() {
@@ -128,7 +128,7 @@ public class ConstantExpression implements Expression {
     }
 
     /**
-     * @see java.lang.Object#equals(Object)
+     * @see Object#equals(Object)
      */
     @Override
     public boolean equals(final Object o) {
@@ -164,6 +164,6 @@ public class ConstantExpression implements Expression {
         }
         b.append('\'');
         return b.toString();
-    }
+   }
 
 }

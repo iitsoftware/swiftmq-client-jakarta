@@ -27,8 +27,8 @@ import com.swiftmq.net.client.IntraVMReconnector;
 import com.swiftmq.net.client.Reconnector;
 import com.swiftmq.net.client.ServerEntry;
 import com.swiftmq.tools.dump.Dumpable;
-import jakarta.jms.*;
 
+import jakarta.jms.*;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
@@ -329,7 +329,7 @@ public class ConnectionFactoryImpl
         return createConnection(null, null);
     }
 
-    public synchronized Connection createConnection(String userName, String password) throws JMSException {
+    public Connection createConnection(String userName, String password) throws JMSException {
         // create connection and return it
         ConnectionImpl qc = new ConnectionImpl(userName == null ? "anonymous" : userName, password, createReconnector());
         qc.assignClientId(clientId);
@@ -349,11 +349,31 @@ public class ConnectionFactoryImpl
         return (qc);
     }
 
+    @Override
+    public JMSContext createContext() {
+        return null;
+    }
+
+    @Override
+    public JMSContext createContext(String s, String s1) {
+        return null;
+    }
+
+    @Override
+    public JMSContext createContext(String s, String s1, int i) {
+        return null;
+    }
+
+    @Override
+    public JMSContext createContext(int i) {
+        return null;
+    }
+
     public XAConnection createXAConnection() throws JMSException {
         return createXAConnection(null, null);
     }
 
-    public synchronized XAConnection createXAConnection(String userName, String password) throws JMSException {
+    public XAConnection createXAConnection(String userName, String password) throws JMSException {
         // create connection and return it
         XAConnectionImpl qc = new XAConnectionImpl(userName == null ? "anonymous" : userName, password, createReconnector());
         qc.assignClientId(clientId);
@@ -372,14 +392,24 @@ public class ConnectionFactoryImpl
             qc.startKeepAlive(keepaliveInterval);
         return (qc);
     }
+
+    @Override
+    public XAJMSContext createXAContext() {
+        return null;
+    }
+
+    @Override
+    public XAJMSContext createXAContext(String s, String s1) {
+        return null;
+    }
     // <-- JMS 1.1
 
     public QueueConnection createQueueConnection() throws JMSException {
         return (createQueueConnection(null, null));
     }
 
-    public synchronized QueueConnection createQueueConnection(String userName,
-                                                              String password) throws JMSException {
+    public QueueConnection createQueueConnection(String userName,
+                                                 String password) throws JMSException {
         // create queue connection and return it
         QueueConnectionImpl qc = new QueueConnectionImpl(userName == null ? "anonymous" : userName, password, createReconnector());
         qc.assignClientId(clientId);
@@ -428,7 +458,7 @@ public class ConnectionFactoryImpl
         return (createTopicConnection(null, null));
     }
 
-    public synchronized TopicConnection createTopicConnection(String userName, String password)
+    public TopicConnection createTopicConnection(String userName, String password)
             throws JMSException {
         // create queue connection and return it
         TopicConnectionImpl qc = new TopicConnectionImpl(userName == null ? "anonymous" : userName, password, createReconnector());
@@ -473,36 +503,6 @@ public class ConnectionFactoryImpl
             qc.startKeepAlive(keepaliveInterval);
 
         return (qc);
-    }
-
-    @Override
-    public JMSContext createContext() {
-        throw new RuntimeException("Operation not supported");
-    }
-
-    @Override
-    public JMSContext createContext(String s, String s1) {
-        throw new RuntimeException("Operation not supported");
-    }
-
-    @Override
-    public JMSContext createContext(String s, String s1, int i) {
-        throw new RuntimeException("Operation not supported");
-    }
-
-    @Override
-    public JMSContext createContext(int i) {
-        throw new RuntimeException("Operation not supported");
-    }
-
-    @Override
-    public XAJMSContext createXAContext() {
-        throw new RuntimeException("Operation not supported");
-    }
-
-    @Override
-    public XAJMSContext createXAContext(String s, String s1) {
-        throw new RuntimeException("Operation not supported");
     }
 
     public String toString() {

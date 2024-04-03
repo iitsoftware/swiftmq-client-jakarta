@@ -21,9 +21,9 @@ import com.swiftmq.client.Versions;
 import com.swiftmq.tools.file.GenerationalFileWriter;
 import com.swiftmq.tools.file.NumberGenerationProvider;
 import com.swiftmq.tools.file.RolloverSizeProvider;
+
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Message;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -95,7 +95,7 @@ public class SwiftMQConnectionFactory {
                     if (writer == null) {
                         writer = new GenerationalFileWriter(System.getProperty("swiftmq.client.debugtofile.directory", System.getProperty("user.dir")), System.getProperty("swiftmq.client.debugtofile.filename", "swiftmqclient"), new RolloverSizeProvider() {
                             public long getRollOverSize() {
-                                return Integer.parseInt(System.getProperty("swiftmq.client.debugtofile.rolloversizekb", "1024")) * 1024;
+                                return Integer.parseInt(System.getProperty("swiftmq.client.debugtofile.rolloversizekb", "1024")) * 1024L;
                             }
                         }, new NumberGenerationProvider() {
                             public int getNumberGenerations() {
@@ -134,7 +134,6 @@ public class SwiftMQConnectionFactory {
         return createV750CF(properties);
     }
 
-
     private static ConnectionFactory createV750CF(Map properties)
             throws Exception {
         boolean intraVM = false;
@@ -160,8 +159,8 @@ public class SwiftMQConnectionFactory {
                     Boolean.valueOf(getDefaultProp(USE_THREAD_CONTEXT_CLASSLOADER, properties, "false")).booleanValue(),
                     Integer.parseInt(getDefaultProp(INPUT_BUFFER_SIZE, properties, "131072")),
                     Integer.parseInt(getDefaultProp(INPUT_EXTEND_SIZE, properties, "65536")),
-                    Integer.parseInt(getDefaultProp(OUTPUT_BUFFER_SIZE, properties, "131072")),
-                    Integer.parseInt(getDefaultProp(OUTPUT_EXTEND_SIZE, properties, "65536")),
+                    Integer.parseInt(getDefaultProp(OUTPUT_BUFFER_SIZE, properties, "1400")),
+                    Integer.parseInt(getDefaultProp(OUTPUT_EXTEND_SIZE, properties, "1400")),
                     true);
         } else {
             cf = new com.swiftmq.jms.v750.ConnectionFactoryImpl(null,
@@ -181,8 +180,8 @@ public class SwiftMQConnectionFactory {
                     Boolean.valueOf(getDefaultProp(USE_THREAD_CONTEXT_CLASSLOADER, properties, "false")).booleanValue(),
                     Integer.parseInt(getDefaultProp(INPUT_BUFFER_SIZE, properties, "131072")),
                     Integer.parseInt(getDefaultProp(INPUT_EXTEND_SIZE, properties, "65536")),
-                    Integer.parseInt(getDefaultProp(OUTPUT_BUFFER_SIZE, properties, "131072")),
-                    Integer.parseInt(getDefaultProp(OUTPUT_EXTEND_SIZE, properties, "65536")),
+                    Integer.parseInt(getDefaultProp(OUTPUT_BUFFER_SIZE, properties, "1400")),
+                    Integer.parseInt(getDefaultProp(OUTPUT_EXTEND_SIZE, properties, "1400")),
                     false);
             cf.setReconnectEnabled(Boolean.valueOf(getDefaultProp(RECONNECT_ENABLED, properties, "false")).booleanValue());
             cf.setRetryDelay(Long.parseLong(getDefaultProp(RECONNECT_RETRY_DELAY, properties, "10000")));

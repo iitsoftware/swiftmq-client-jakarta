@@ -19,9 +19,9 @@ package com.swiftmq.jms;
 
 import com.swiftmq.jndi.SwiftMQObjectFactory;
 import com.swiftmq.tools.util.LazyUTF8String;
+
 import jakarta.jms.JMSException;
 import jakarta.jms.Topic;
-
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;

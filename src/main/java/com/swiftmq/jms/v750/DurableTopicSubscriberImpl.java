@@ -23,6 +23,7 @@ import com.swiftmq.jms.smqp.v750.CreateDurableRequest;
 import com.swiftmq.tools.requestreply.Reply;
 import com.swiftmq.tools.requestreply.Request;
 import com.swiftmq.tools.requestreply.RequestRegistry;
+
 import jakarta.jms.Topic;
 
 public class DurableTopicSubscriberImpl extends TopicSubscriberImpl {

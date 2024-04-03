@@ -18,9 +18,9 @@
 package com.swiftmq.jms.v750;
 
 import com.swiftmq.util.Version;
+
 import jakarta.jms.ConnectionMetaData;
 import jakarta.jms.JMSException;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

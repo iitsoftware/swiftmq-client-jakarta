@@ -19,6 +19,7 @@ package com.swiftmq.ms;
 
 import com.swiftmq.jms.MessageImpl;
 import com.swiftmq.swiftlet.queue.Selector;
+
 import jakarta.jms.InvalidSelectorException;
 
 // This is a proxy class for compatibility reasons (Swiftlet API)

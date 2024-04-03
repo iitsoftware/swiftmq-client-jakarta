@@ -18,10 +18,10 @@
 package com.swiftmq.jms;
 
 import com.swiftmq.tools.util.LazyUTF8String;
+
 import jakarta.jms.JMSException;
 import jakarta.jms.MessageNotWriteableException;
 import jakarta.jms.TextMessage;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

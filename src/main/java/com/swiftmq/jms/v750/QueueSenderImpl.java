@@ -23,11 +23,11 @@ import com.swiftmq.jms.smqp.v750.CreateProducerRequest;
 import com.swiftmq.tools.requestreply.Reply;
 import com.swiftmq.tools.requestreply.Request;
 import com.swiftmq.tools.requestreply.RequestRegistry;
+
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.Queue;
 import jakarta.jms.QueueSender;
-
 import java.util.List;
 
 public class QueueSenderImpl extends MessageProducerImpl

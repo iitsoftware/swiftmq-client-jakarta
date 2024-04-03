@@ -141,12 +141,13 @@ public class Token implements java.io.Serializable {
         switch (ofKind) {
             default:
                 return new Token(ofKind, image);
-        }
     }
+  }
 
-    public static Token newToken(int ofKind) {
-        return newToken(ofKind, null);
-    }
+  public static Token newToken(int ofKind)
+  {
+    return newToken(ofKind, null);
+  }
 
 }
 /* JavaCC - OriginalChecksum=34d7677cb89a845f8751d6e41aa6a365 (do not edit this line) */

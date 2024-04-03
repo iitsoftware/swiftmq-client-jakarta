@@ -31,7 +31,7 @@ import java.net.*;
  *
  * @author IIT GmbH, Bremen/Germany, Copyright (c) 2000-2002, All Rights Reserved
  */
-public class JSSESocketFactory implements com.swiftmq.net.SocketFactory, Serializable {
+public class JSSESocketFactory implements SocketFactory, Serializable {
     static final int SO_TIMEOUT = Integer.parseInt(SystemProperties.get("swiftmq.socket.sotimeout", "0"));
 
     protected static SSLSocketFactory getSocketFactory() throws IOException {

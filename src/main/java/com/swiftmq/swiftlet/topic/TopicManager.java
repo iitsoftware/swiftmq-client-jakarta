@@ -25,9 +25,9 @@ import com.swiftmq.swiftlet.queue.QueueAlreadyDefinedException;
 import com.swiftmq.swiftlet.queue.QueueException;
 import com.swiftmq.swiftlet.queue.Selector;
 import com.swiftmq.swiftlet.queue.UnknownQueueException;
+
 import jakarta.jms.InvalidDestinationException;
 import jakarta.jms.JMSException;
-
 import java.util.StringTokenizer;
 
 /**

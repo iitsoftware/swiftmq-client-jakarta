@@ -19,8 +19,8 @@ package com.swiftmq.jms;
 
 import com.swiftmq.tools.util.DataByteArrayInputStream;
 import com.swiftmq.tools.util.DataByteArrayOutputStream;
-import jakarta.jms.*;
 
+import jakarta.jms.*;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.EOFException;

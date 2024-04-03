@@ -487,6 +487,6 @@ public abstract class ComparisonExpression extends BinaryExpression implements B
     public boolean matches(Filterable message) throws FilterException {
         Object object = evaluate(message);
         return object == Boolean.TRUE;
-    }
+   }
 
 }

@@ -24,6 +24,7 @@ import com.swiftmq.ms.artemis.filter.Filterable;
 import com.swiftmq.ms.artemis.impl.SelectorParser;
 import com.swiftmq.ms.artemis.util.SimpleString;
 import com.swiftmq.swiftlet.queue.Selector;
+
 import jakarta.jms.InvalidSelectorException;
 
 public class MessageSelector implements Selector, Filterable {

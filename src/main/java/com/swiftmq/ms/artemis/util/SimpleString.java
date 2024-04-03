@@ -477,7 +477,7 @@ public final class SimpleString implements CharSequence, Serializable, Comparabl
 
             int high = data[j++] << 8 & 0xFF00;
 
-            dst[d++] = (char) (low | high);
-        }
-    }
+         dst[d++] = (char) (low | high);
+      }
+   }
 }

@@ -24,7 +24,7 @@ package com.swiftmq.ms.artemis.strict;
  * You can explicitly create objects of this exception type by
  * calling the method generateParseException in the generated
  * parser.
- * <p>
+ *
  * You can modify this class to customize your error reporting
  * mechanisms so long as you retain the public fields.
  */
@@ -196,9 +196,9 @@ public class ParseException extends Exception {
                     }
                     continue;
             }
-        }
-        return retval.toString();
-    }
+      }
+      return retval.toString();
+   }
 
 }
 /* JavaCC - OriginalChecksum=bf20951564553348d3e9e34f5b6d139f (do not edit this line) */

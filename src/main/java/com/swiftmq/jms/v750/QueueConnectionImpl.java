@@ -21,8 +21,9 @@ import com.swiftmq.jms.ExceptionConverter;
 import com.swiftmq.jms.smqp.v750.CreateSessionReply;
 import com.swiftmq.jms.smqp.v750.CreateSessionRequest;
 import com.swiftmq.net.client.Reconnector;
-import jakarta.jms.IllegalStateException;
+
 import jakarta.jms.*;
+import jakarta.jms.IllegalStateException;
 
 public class QueueConnectionImpl extends ConnectionImpl
         implements QueueConnection {

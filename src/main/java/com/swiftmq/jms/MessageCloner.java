@@ -18,7 +18,6 @@
 package com.swiftmq.jms;
 
 import jakarta.jms.*;
-
 import java.io.Serializable;
 import java.util.Enumeration;
 

@@ -1,6 +1,7 @@
 package com.swiftmq.jms.springsupport;
 
 import com.swiftmq.admin.cli.CLI;
+
 import jakarta.jms.QueueConnection;
 import jakarta.jms.QueueConnectionFactory;
 

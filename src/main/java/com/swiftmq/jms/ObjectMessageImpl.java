@@ -20,10 +20,10 @@ package com.swiftmq.jms;
 import com.swiftmq.tools.security.SecureClassLoaderObjectInputStream;
 import com.swiftmq.tools.util.DataByteArrayInputStream;
 import com.swiftmq.tools.util.DataByteArrayOutputStream;
+
 import jakarta.jms.JMSException;
 import jakarta.jms.MessageNotWriteableException;
 import jakarta.jms.ObjectMessage;
-
 import java.io.*;
 
 /**

@@ -19,8 +19,8 @@ package com.swiftmq.jms;
 
 import com.swiftmq.jms.primitives.*;
 import com.swiftmq.tools.dump.Dumpable;
-import jakarta.jms.*;
 
+import jakarta.jms.*;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
