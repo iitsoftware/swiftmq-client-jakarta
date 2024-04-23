@@ -18,7 +18,7 @@ You can obtain SwiftMQ Client from Maven Central by adding this dependency to yo
      <dependency>
        <groupId>com.swiftmq</groupId>
        <artifactId>swiftmq-client-jakarta</artifactId>
-       <version>13.0.0</version>
+       <version>13.0.1</version>
      </dependency>
 ```
 
