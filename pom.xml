@@ -51,16 +51,6 @@
       <artifactId>jakarta.jms-api</artifactId>
       <version>3.1.0</version>
     </dependency>
-    <dependency>
-      <groupId>org.jline</groupId>
-      <artifactId>jline-reader</artifactId>
-      <version>3.30.15</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jline</groupId>
-      <artifactId>jline-terminal</artifactId>
-      <version>3.30.15</version>
-    </dependency>
   </dependencies>
 
   <scm>
